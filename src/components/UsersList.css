@@ -1,0 +1,274 @@
+.pirates-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.pirate-card {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 1rem;
+  background: #2a2a2a;
+  transition: transform 0.2s;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.pirate-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(to right, #ffd700, #ff4444);
+  opacity: 0.8;
+}
+
+/* Add success indicator styles based on crew metrics */
+.high-success .pirate-card::before {
+  background: linear-gradient(to right, #4CAF50, #45a049);
+}
+
+.medium-success .pirate-card::before {
+  background: linear-gradient(to right, #ffd700, #ff9800);
+}
+
+.low-success .pirate-card::before {
+  background: linear-gradient(to right, #ff4444, #ff1744);
+}
+
+.pirate-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+}
+
+.pirate-image {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  background: #1a1a1a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pirate-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.pirate-image img:hover {
+  transform: scale(1.05);
+}
+
+.create-pirate-form {
+  max-width: 600px;
+  margin: 0 auto 2rem;
+  padding: 2rem;
+  background: #2a2a2a;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.image-selection-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.image-option {
+  cursor: pointer;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.2s;
+  background: #1a1a1a;
+  aspect-ratio: 1;
+}
+
+.image-option.selected {
+  border-color: #ffd700;
+  transform: scale(1.05);
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.image-option img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 0.5rem;
+}
+
+.role-select {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 4px;
+  background: #1a1a1a;
+  color: white;
+  border: 1px solid #3a3a3a;
+  margin-bottom: 1rem;
+}
+
+.description-input {
+  width: 100%;
+  min-height: 100px;
+  padding: 0.5rem;
+  border-radius: 4px;
+  background: #1a1a1a;
+  color: white;
+  border: 1px solid #3a3a3a;
+  margin-bottom: 1rem;
+  resize: vertical;
+}
+
+.stat-slider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.stat-value {
+  min-width: 30px;
+  text-align: center;
+  background: #3a3a3a;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+.create-button {
+  background: #ffd700;
+  color: #1a1a1a;
+  width: 100%;
+  padding: 1rem;
+  font-size: 1.1rem;
+  margin-top: 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.create-button:hover {
+  background: #ffed4a;
+  transform: translateY(-2px);
+}
+
+.battle-button, .delete-button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin: 0.5rem;
+}
+
+.battle-button {
+  background: #4444ff;
+  color: white;
+}
+
+.delete-button {
+  background: #ff4444;
+  color: white;
+}
+
+.battle-button:hover, .delete-button:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.2);
+}
+
+.role {
+  color: #ffd700;
+  font-weight: bold;
+  margin: 0.5rem 0;
+}
+
+.description {
+  color: #ccc;
+  font-style: italic;
+  margin: 1rem 0;
+}
+
+form {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+form div {
+  margin-bottom: 1rem;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+input, select, textarea {
+  width: 100%;
+  padding: 0.5rem;
+}
+
+button {
+  background: #4CAF50;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #45a049;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.battle-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.pirate-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.pirate-actions button:first-child {
+  background: #4444ff;
+}
+
+.category-select {
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  background: #1a1a1a;
+  color: white;
+  border: 1px solid #3a3a3a;
+  border-radius: 4px;
+}
+
