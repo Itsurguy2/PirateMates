@@ -1,19 +1,25 @@
 .pirates-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
   padding: 1rem;
+  position: relative;
 }
 
 .pirate-card {
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 1rem;
-  background: #2a2a2a;
-  transition: transform 0.2s;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background: #404b69;
+  border-radius: 4px;
+  padding: 1.5rem;
+  transition: all 0.2s ease;
   position: relative;
-  overflow: hidden;
+  border: 1px solid #576574;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.pirate-card:hover {
+  transform: translateY(-2px);
+  border-color: #ffa502;
+  box-shadow: 0 4px 12px rgba(255, 165, 2, 0.2);
 }
 
 .pirate-card::before {
@@ -22,27 +28,36 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 4px;
-  background: linear-gradient(to right, #ffd700, #ff4444);
+  height: 2px;
+  background: #ffa502;
   opacity: 0.8;
 }
 
-/* Add success indicator styles based on crew metrics */
-.high-success .pirate-card::before {
-  background: linear-gradient(to right, #4CAF50, #45a049);
+.pirate-card h3 {
+  font-size: 1.2rem;
+  color: #ffa502;
+  margin-bottom: 0.8rem;
+  font-family: 'Roboto Condensed', sans-serif;
 }
 
-.medium-success .pirate-card::before {
-  background: linear-gradient(to right, #ffd700, #ff9800);
+.stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.8rem;
+  margin: 1rem 0;
+  background: #353b48;
+  padding: 0.8rem;
+  border-radius: 4px;
+  border: 1px solid #576574;
 }
 
-.low-success .pirate-card::before {
-  background: linear-gradient(to right, #ff4444, #ff1744);
-}
-
-.pirate-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+.stats span {
+  background: #2f3542;
+  padding: 0.5rem;
+  border-radius: 2px;
+  font-size: 0.9rem;
+  text-align: center;
+  color: #f1f2f6;
 }
 
 .pirate-image {
@@ -75,6 +90,41 @@
   background: #2a2a2a;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+.current-image {
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.preview-image {
+  max-width: 200px;
+  height: auto;
+  border-radius: 8px;
+  margin-top: 0.5rem;
+}
+
+.stats-section {
+  background: #1a1a1a;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+
+.stats-section h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #ffd700;
 }
 
 .image-selection-grid {
@@ -144,22 +194,83 @@
   border-radius: 4px;
 }
 
-.create-button {
+input[type="range"] {
+  flex: 1;
+  height: 8px;
+  -webkit-appearance: none;
+  background: #3a3a3a;
+  border-radius: 4px;
+  outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
   background: #ffd700;
-  color: #1a1a1a;
-  width: 100%;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.form-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.form-buttons button {
+  flex: 1;
   padding: 1rem;
   font-size: 1.1rem;
-  margin-top: 1rem;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
+}
+
+.create-button {
+  background: #ffd700;
+  color: #1a1a1a;
 }
 
 .create-button:hover {
   background: #ffed4a;
   transform: translateY(-2px);
+}
+
+.delete-button {
+  background: #ff4444;
+  color: white;
+}
+
+.delete-button:hover {
+  background: #ff6666;
+  transform: translateY(-2px);
+}
+
+.cancel-button {
+  background: #666;
+  color: white;
+}
+
+.cancel-button:hover {
+  background: #777;
+  transform: translateY(-2px);
+}
+
+/* Add animation for form transitions */
+.create-pirate-form {
+  transition: all 0.3s ease;
+}
+
+.create-pirate-form.editing {
+  background: #2a2a2a;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Add a warning style for delete confirmation */
+.delete-button:active {
+  background: #cc0000;
 }
 
 .battle-button, .delete-button {
@@ -236,6 +347,29 @@ button:hover {
   grid-template-columns: repeat(2, 1fr);
   gap: 0.5rem;
   margin: 1rem 0;
+  padding: 0.5rem;
+  background: #1a1a1a;
+  border-radius: 4px;
+}
+
+.stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+}
+
+.stat-label {
+  color: #ffd700;
+  font-weight: bold;
+}
+
+.stat-value {
+  background: #3a3a3a;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  min-width: 30px;
+  text-align: center;
 }
 
 .battle-overlay {
@@ -252,10 +386,24 @@ button:hover {
 }
 
 .pirate-actions {
+  position: relative;
+  z-index: 2;
   display: flex;
-  gap: 10px;
-  justify-content: center;
-  margin-top: 10px;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.pirate-actions button {
+  flex: 1;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.pirate-actions button:hover {
+  transform: translateY(-2px);
 }
 
 .pirate-actions button:first-child {
@@ -264,11 +412,219 @@ button:hover {
 
 .category-select {
   width: 100%;
-  padding: 0.5rem;
-  margin-bottom: 1rem;
-  background: #1a1a1a;
-  color: white;
-  border: 1px solid #3a3a3a;
+  padding: 8px;
+  border: 1px solid #444;
   border-radius: 4px;
+  background-color: #2a2a2a;
+  color: #fff;
+  margin-top: 4px;
 }
+
+.category-select option {
+  background-color: #2a2a2a;
+  color: #fff;
+}
+
+.edit-button {
+  background: #ffd700;
+  color: #1a1a1a;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin: 0.5rem;
+}
+
+.edit-button:hover {
+  background: #ffed4a;
+  transform: translateY(-2px);
+}
+
+/* Update the form title to be dynamic */
+.create-pirate-form h2 {
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+/* Add a cancel button style */
+.cancel-button {
+  background: #666;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 1rem;
+  width: 100%;
+}
+
+.cancel-button:hover {
+  background: #777;
+  transform: translateY(-2px);
+}
+
+.form-container {
+  background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+  padding: 2rem;
+  border-radius: 15px;
+  margin: 2rem auto;
+  max-width: 600px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 215, 0, 0.1);
+}
+
+input[type="text"],
+textarea,
+select {
+  width: 100%;
+  padding: 1rem;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  color: white;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+input[type="text"]:focus,
+textarea:focus,
+select:focus {
+  border-color: #ffd700;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+  outline: none;
+}
+
+.battle-button {
+  background: linear-gradient(45deg, #ff4444, #ff6b6b);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+  width: 100%;
+}
+
+.battle-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 68, 68, 0.4);
+}
+
+.battle-button {
+  background: #ff6b1a;
+  color: #1c1c1c;
+  padding: 0.6rem 1.2rem;
+  border-radius: 2px;
+  cursor: pointer;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+  border: none;
+}
+
+.battle-button:hover {
+  background: #ff8142;
+  transform: translateY(-1px);
+}
+
+.delete-button {
+  background: #cc3333;
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border-radius: 2px;
+  font-size: 0.9rem;
+}
+
+input[type="text"],
+textarea,
+select {
+  width: 100%;
+  padding: 0.8rem;
+  border-radius: 2px;
+  background: #252525;
+  border: 1px solid #333;
+  color: #e6e6e6;
+  font-size: 0.9rem;
+}
+
+input[type="text"]:focus,
+textarea:focus,
+select:focus {
+  border-color: #ff6b1a;
+  outline: none;
+}
+
+.battle-button {
+  background: #ffa502;
+  color: #2f3542;
+  padding: 0.6rem 1.2rem;
+  border-radius: 2px;
+  cursor: pointer;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+  border: none;
+}
+
+.battle-button:hover {
+  background: #ffbe76;
+  transform: translateY(-1px);
+  box-shadow: 0 0 15px rgba(255, 165, 2, 0.4);
+}
+
+.edit-button {
+  background: #70a1ff;
+  color: #2f3542;
+}
+
+.edit-button:hover {
+  background: #97bdff;
+  box-shadow: 0 0 15px rgba(112, 161, 255, 0.4);
+}
+
+.delete-button {
+  background: #ff6b81;
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border-radius: 2px;
+  font-size: 0.9rem;
+}
+
+.delete-button:hover {
+  background: #ff8c9a;
+  box-shadow: 0 0 15px rgba(255, 107, 129, 0.4);
+}
+
+input[type="text"],
+textarea,
+select {
+  width: 100%;
+  padding: 0.8rem;
+  border-radius: 2px;
+  background: #353b48;
+  border: 1px solid #576574;
+  color: #f1f2f6;
+  font-size: 0.9rem;
+}
+
+input[type="text"]:focus,
+textarea:focus,
+select:focus {
+  border-color: #ffa502;
+  outline: none;
+  box-shadow: 0 0 10px rgba(255, 165, 2, 0.2);
+}
+
+
+
 

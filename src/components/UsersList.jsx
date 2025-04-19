@@ -3,9 +3,12 @@ import React, { useEffect, useState } from 'react';
 import supabase from '../supabaseClient/supabaseClient';
 import PirateBattle from './PirateBattle';
 import CrewStats from './CrewStats';
+import { useNavigate, useLocation } from 'react-router-dom';
 
-function UsersList() {
-  const [pirates, setPirates] = useState([]);
+function UsersList({ pirates, setPirates, fetchPirates }) {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [categories, setCategories] = useState([]); // Add categories state
   const [newPirate, setNewPirate] = useState({
     name: '',
     role: 'Captain',
@@ -16,10 +19,27 @@ function UsersList() {
     description: '',
     image_url: ''
   });
-  const [selectedPirate, setSelectedPirate] = useState(null);
-  const [isBattling, setIsBattling] = useState(false);
-  const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [isBattling, setIsBattling] = useState(false);
+  const [selectedPirate, setSelectedPirate] = useState(null);
+
+  // Add useEffect to fetch categories
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('pirate_categories')
+          .select('*');
+        
+        if (error) throw error;
+        setCategories(data || []);
+      } catch (err) {
+        console.error('Error fetching categories:', err);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   // Robohash image configurations
   const generateRoboHashUrl = (seed, set = 'set2', size = '300x300', background = '') => {
@@ -40,59 +60,19 @@ function UsersList() {
     generateRoboHashUrl('monster2', 'set3')
   ];
 
-  useEffect(() => {
-    fetchPirates();
-    fetchCategories();
-  }, []);
-
-  const fetchPirates = async () => {
-    const { data, error } = await supabase
-      .from('pirates')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      console.error('Error fetching pirates:', error);
-    } else {
-      setPirates(data || []);
-    }
-  };
-
-  const fetchCategories = async () => {
-    try {
-      console.log('Fetching categories...');
-      const { data, error } = await supabase
-        .from('pirate_categories')
-        .select('*');
-
-      if (error) {
-        console.error('Error fetching categories:', error);
-        return;
-      }
-
-      console.log('Raw categories data:', data);
-      
-      if (!data || data.length === 0) {
-        console.log('No categories found in the database');
-        return;
-      }
-
-      setCategories(data);
-      console.log('Categories set in state:', data);
-    } catch (err) {
-      console.error('Unexpected error fetching categories:', err);
-    }
-  };
+  // Remove the fetchPirates function and useEffect since they're now in App.jsx
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     
     if (selectedCategory) {
       const category = categories.find(c => c.id === selectedCategory);
-      if (name in category) {
+      if (category && name in category) {
+        const minKey = `min_${name}`;
+        const maxKey = `max_${name}`;
         const numValue = parseInt(value);
-        if (numValue < category[`min_${name}`] || numValue > category[`max_${name}`]) {
-          alert(`${name} must be between ${category[`min_${name}`]} and ${category[`max_${name}`]} for this category`);
+        if (numValue < category[minKey] || numValue > category[maxKey]) {
+          alert(`${name} must be between ${category[minKey]} and ${category[maxKey]} for this category`);
           return;
         }
       }
@@ -120,11 +100,59 @@ function UsersList() {
     }));
   };
 
+  const handleEdit = (pirate) => {
+    // Set all pirate attributes including stats
+    setNewPirate({
+      id: pirate.id,
+      name: pirate.name,
+      role: pirate.role,
+      strength: parseInt(pirate.strength),
+      agility: parseInt(pirate.agility),
+      intelligence: parseInt(pirate.intelligence),
+      charisma: parseInt(pirate.charisma),
+      description: pirate.description,
+      image_url: pirate.image_url
+    });
+
+    // If the pirate has a category, set it
+    if (pirate.category_id) {
+      setSelectedCategory(pirate.category_id);
+    }
+
+    // Update form title to indicate editing mode
+    const formTitle = document.querySelector('.create-pirate-form h2');
+    if (formTitle) {
+      formTitle.textContent = 'Edit PirateMate';
+    }
+
+    // Scroll to the form
+    document.querySelector('.create-pirate-form').scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleCancel = () => {
+    setNewPirate({
+      name: '',
+      role: 'Captain',
+      strength: 5,
+      agility: 5,
+      intelligence: 5,
+      charisma: 5,
+      description: '',
+      image_url: ''
+    });
+    setSelectedCategory(null);
+
+    // Reset form title
+    const formTitle = document.querySelector('.create-pirate-form h2');
+    if (formTitle) {
+      formTitle.textContent = 'Create New PirateMate';
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
     try {
-      // Validate required fields
       if (!newPirate.name) {
         alert('Name is required');
         return;
@@ -135,27 +163,57 @@ function UsersList() {
         newPirate.image_url = generateRoboHashUrl(newPirate.name + Date.now(), 'set2');
       }
 
-      // Add created_at timestamp
-      const pirateData = {
-        ...newPirate,
-        created_at: new Date().toISOString(),
-        experience: 0, // Add default experience
+      let result;
+      const updatedPirate = {
+        name: newPirate.name,
+        role: newPirate.role,
+        strength: parseInt(newPirate.strength),
+        agility: parseInt(newPirate.agility),
+        intelligence: parseInt(newPirate.intelligence),
+        charisma: parseInt(newPirate.charisma),
+        description: newPirate.description,
+        image_url: newPirate.image_url
       };
 
-      console.log('Attempting to create pirate with data:', pirateData);
-
-      const { data, error } = await supabase
-        .from('pirates')
-        .insert([pirateData])
-        .select();
-
-      if (error) {
-        console.error('Detailed error:', error);
-        alert(`Failed to create pirate: ${error.message}`);
-        return;
+      // Only add category_id if a category is selected
+      if (selectedCategory) {
+        updatedPirate.category_id = selectedCategory;
       }
 
-      console.log('Pirate created successfully:', data);
+      if (newPirate.id) {
+        // Update existing pirate
+        result = await supabase
+          .from('pirates')
+          .update(updatedPirate)
+          .eq('id', newPirate.id)
+          .select();
+
+        if (result.data) {
+          // Immediately update the pirates list with the new data
+          setPirates(pirates.map(p => 
+            p.id === newPirate.id ? { ...p, ...updatedPirate } : p
+          ));
+        }
+      } else {
+        // Create new pirate
+        result = await supabase
+          .from('pirates')
+          .insert([{
+            ...updatedPirate,
+            created_at: new Date().toISOString(),
+            experience: 0
+          }])
+          .select();
+
+        if (result.data) {
+          // Add the new pirate to the list immediately
+          setPirates(prev => [...prev, result.data[0]]);
+        }
+      }
+
+      if (result.error) {
+        throw result.error;
+      }
 
       // Reset form
       setNewPirate({
@@ -168,26 +226,62 @@ function UsersList() {
         description: '',
         image_url: ''
       });
-      
-      // Refresh pirates list
-      fetchPirates();
+      setSelectedCategory(null);
+
+      // Reset form title
+      const formTitle = document.querySelector('.create-pirate-form h2');
+      if (formTitle) {
+        formTitle.textContent = 'Create New PirateMate';
+      }
 
     } catch (err) {
-      console.error('Unexpected error:', err);
-      alert(`Unexpected error: ${err.message}`);
+      console.error('Error:', err);
+      alert(`Error: ${err.message}`);
     }
   };
 
   const handleDelete = async (id) => {
-    const { error } = await supabase
-      .from('pirates')
-      .delete()
-      .eq('id', id);
+    // Add confirmation dialog
+    if (!confirm('Are you sure you want to delete this PirateMate?')) {
+      return;
+    }
 
-    if (error) {
-      console.error('Error deleting pirate:', error);
-    } else {
-      fetchPirates();
+    try {
+      const { error } = await supabase
+        .from('pirates')
+        .delete()
+        .eq('id', id);
+
+      if (error) {
+        throw error;
+      }
+
+      // Immediately update the UI by removing the deleted pirate
+      setPirates(pirates.filter(p => p.id !== id));
+      
+      // Reset the form if we're deleting the currently edited pirate
+      if (newPirate.id === id) {
+        setNewPirate({
+          name: '',
+          role: 'Captain',
+          strength: 5,
+          agility: 5,
+          intelligence: 5,
+          charisma: 5,
+          description: '',
+          image_url: ''
+        });
+        setSelectedCategory(null);
+
+        // Reset form title
+        const formTitle = document.querySelector('.create-pirate-form h2');
+        if (formTitle) {
+          formTitle.textContent = 'Create New PirateMate';
+        }
+      }
+    } catch (err) {
+      console.error('Error deleting pirate:', err);
+      alert(`Error deleting PirateMate: ${err.message}`);
     }
   };
 
@@ -196,11 +290,36 @@ function UsersList() {
     setIsBattling(true);
   };
 
+  const handlePirateClick = (pirateId) => {
+    console.log('Clicking pirate with ID:', pirateId);
+    // Debug the pirate object
+    const clickedPirate = pirates.find(p => p.id === pirateId);
+    console.log('Clicked pirate object:', clickedPirate);
+    
+    if (pirateId) {
+      navigate(`/pirate/${pirateId}`);
+    } else {
+      console.error('No pirate ID provided');
+    }
+  };
+
+  useEffect(() => {
+    // Check if we have an editPirateId in the location state
+    if (location.state?.editPirateId) {
+      const pirateToEdit = pirates.find(p => p.id === location.state.editPirateId);
+      if (pirateToEdit) {
+        handleEdit(pirateToEdit);
+        // Scroll to the form
+        document.querySelector('.create-pirate-form').scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  }, [location.state, pirates]);
+
   return (
     <div>
-      <h2>Create New PirateMate</h2>
+      <h2>{newPirate.id ? 'Edit PirateMate' : 'Create New PirateMate'}</h2>
       <form onSubmit={handleSubmit} className="create-pirate-form">
-        <div>
+        <div className="form-group">
           <label>Name: </label>
           <input
             type="text"
@@ -211,22 +330,30 @@ function UsersList() {
           />
         </div>
 
-        <div>
-          <label>Choose Your Character:</label>
-          <div className="image-selection-grid">
-            {pirateImages.map((imageUrl, index) => (
-              <div 
-                key={index}
-                className={`image-option ${newPirate.image_url === imageUrl ? 'selected' : ''}`}
-                onClick={() => handleImageSelect(imageUrl)}
-              >
-                <img src={imageUrl} alt={`Pirate ${index + 1}`} />
-              </div>
-            ))}
+        {newPirate.image_url && (
+          <div className="current-image">
+            <label>Current Image:</label>
+            <img 
+              src={newPirate.image_url} 
+              alt={newPirate.name} 
+              className="preview-image"
+            />
           </div>
+        )}
+
+        <div className="image-selection-grid">
+          {pirateImages.map((imageUrl, index) => (
+            <div 
+              key={index}
+              className={`image-option ${newPirate.image_url === imageUrl ? 'selected' : ''}`}
+              onClick={() => handleImageSelect(imageUrl)}
+            >
+              <img src={imageUrl} alt={`Pirate ${index + 1}`} />
+            </div>
+          ))}
         </div>
 
-        <div>
+        <div className="form-group">
           <label>Role: </label>
           <select 
             name="role" 
@@ -242,73 +369,154 @@ function UsersList() {
           </select>
         </div>
 
-        {['strength', 'agility', 'intelligence', 'charisma'].map(attr => (
-          <div key={attr} className="stat-slider">
-            <label>{attr.charAt(0).toUpperCase() + attr.slice(1)}: </label>
-            <input
-              type="range"
-              name={attr}
-              min="1"
-              max="10"
-              value={newPirate[attr]}
-              onChange={handleInputChange}
-            />
-            <span className="stat-value">{newPirate[attr]}</span>
-          </div>
-        ))}
+        <div className="form-group">
+          <label>Category: </label>
+          <select 
+            name="category" 
+            value={selectedCategory || ''} 
+            onChange={(e) => setSelectedCategory(e.target.value || null)}
+            className="category-select"
+          >
+            <option value="">Select a category</option>
+            {categories.map(category => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
+        </div>
 
-        <div>
+        <div className="stats-section">
+          <h3>Current Stats</h3>
+          {['strength', 'agility', 'intelligence', 'charisma'].map(attr => (
+            <div key={attr} className="stat-slider">
+              <label>{attr.charAt(0).toUpperCase() + attr.slice(1)}: </label>
+              <input
+                type="range"
+                name={attr}
+                min="1"
+                max="10"
+                value={newPirate[attr]}
+                onChange={handleInputChange}
+              />
+              <span className="stat-value">{newPirate[attr]}</span>
+            </div>
+          ))}
+        </div>
+
+        <div className="form-group">
           <label>Description: </label>
           <textarea
             name="description"
             value={newPirate.description}
             onChange={handleInputChange}
             className="description-input"
+            rows="4"
           />
         </div>
 
-        <div>
+        <div className="form-group">
           <label>Category: </label>
           <select 
             value={selectedCategory || ''} 
-            onChange={(e) => {
-              console.log('Selected category:', e.target.value);
-              setSelectedCategory(e.target.value);
-            }}
+            onChange={(e) => setSelectedCategory(e.target.value)}
             className="category-select"
           >
             <option value="">Select a Category ({categories.length} available)</option>
             {categories.map(category => (
               <option key={category.id} value={category.id}>
-                {category.name} ({category.id})
+                {category.name}
               </option>
             ))}
           </select>
         </div>
 
-        <button type="submit" className="create-button">Create PirateMate</button>
+        <div className="form-buttons">
+          <button type="submit" className="create-button">
+            {newPirate.id ? 'Update PirateMate' : 'Create PirateMate'}
+          </button>
+          
+          {newPirate.id && (
+            <>
+              <button 
+                type="button" 
+                className="delete-button"
+                onClick={() => handleDelete(newPirate.id)}
+              >
+                Delete PirateMate
+              </button>
+              <button 
+                type="button" 
+                className="cancel-button"
+                onClick={handleCancel}
+              >
+                Cancel
+              </button>
+            </>
+          )}
+        </div>
       </form>
 
       <h2>Your PirateMates Crew</h2>
       <CrewStats pirates={pirates} />
       <div className="pirates-grid">
         {pirates.map(pirate => (
-          <div key={pirate.id} className="pirate-card">
+          <div 
+            key={pirate.id} 
+            className="pirate-card"
+            onClick={() => {
+              console.log('Card clicked, pirate:', pirate);
+              handlePirateClick(pirate.id);
+            }}
+            style={{ cursor: 'pointer' }}
+          >
             <div className="pirate-image">
-              <img src={pirate.image_url || generateRoboHashUrl(pirate.name)} alt={pirate.name} />
+              <img 
+                src={pirate.image_url || generateRoboHashUrl(pirate.name)} 
+                alt={pirate.name} 
+                className="pirate-portrait"
+              />
             </div>
             <h3>{pirate.name}</h3>
             <p className="role">Role: {pirate.role}</p>
             <div className="stats">
-              <span>STR: {pirate.strength}</span>
-              <span>AGI: {pirate.agility}</span>
-              <span>INT: {pirate.intelligence}</span>
-              <span>CHA: {pirate.charisma}</span>
+              <div className="stat">
+                <span className="stat-label">STR:</span>
+                <span className="stat-value">{pirate.strength}</span>
+              </div>
+              <div className="stat">
+                <span className="stat-label">AGI:</span>
+                <span className="stat-value">{pirate.agility}</span>
+              </div>
+              <div className="stat">
+                <span className="stat-label">INT:</span>
+                <span className="stat-value">{pirate.intelligence}</span>
+              </div>
+              <div className="stat">
+                <span className="stat-label">CHA:</span>
+                <span className="stat-value">{pirate.charisma}</span>
+              </div>
             </div>
             <p className="description">{pirate.description}</p>
-            <div className="pirate-actions">
-              <button onClick={() => startBattle(pirate)} className="battle-button">Battle</button>
-              <button onClick={() => handleDelete(pirate.id)} className="delete-button">Delete</button>
+            <div className="pirate-actions" onClick={e => e.stopPropagation()}>
+              <button onClick={(e) => {
+                e.stopPropagation();
+                startBattle(pirate);
+              }} className="battle-button">
+                Battle
+              </button>
+              <button onClick={(e) => {
+                e.stopPropagation();
+                handleEdit(pirate);
+              }} className="edit-button">
+                Edit
+              </button>
+              <button onClick={(e) => {
+                e.stopPropagation();
+                handleDelete(pirate.id);
+              }} className="delete-button">
+                Delete
+              </button>
             </div>
           </div>
         ))}

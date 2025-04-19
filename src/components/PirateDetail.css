@@ -1,0 +1,202 @@
+.pirate-detail-container {
+  max-width: 900px;
+  margin: 1.5rem auto;
+  padding: 0 1rem;
+}
+
+.navigation-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.back-button, .edit-button {
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 0.9rem;
+  min-width: 120px;
+  transition: all 0.2s ease;
+}
+
+.back-button {
+  background: #70a1ff;
+  color: #2f3542;
+}
+
+.back-button:hover {
+  background: #97bdff;
+  transform: translateY(-1px);
+  box-shadow: 0 0 15px rgba(112, 161, 255, 0.4);
+}
+
+.edit-button {
+  background: #ffa502;
+  color: #2f3542;
+}
+
+.edit-button:hover {
+  background: #ffbe76;
+  transform: translateY(-1px);
+  box-shadow: 0 0 15px rgba(255, 165, 2, 0.4);
+}
+
+.pirate-detail-card {
+  background: #404b69;
+  border-radius: 4px;
+  padding: 2rem;
+  border: 1px solid #576574;
+  position: relative;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.pirate-header {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.pirate-detail-image {
+  width: 200px;
+  height: 200px;
+  border-radius: 4px;
+  object-fit: cover;
+  border: 2px solid #ffa502;
+  box-shadow: 0 0 10px rgba(255, 165, 2, 0.2);
+}
+
+.pirate-title h1 {
+  margin: 0;
+  color: #ffd700;
+}
+
+.pirate-title h2 {
+  margin: 0.5rem 0 0;
+  color: #999;
+}
+
+.pirate-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.stat-box {
+  background: #353b48;
+  padding: 1rem;
+  border-radius: 4px;
+  border: 1px solid #576574;
+}
+
+.stat-box::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #ffd700, transparent);
+}
+
+.stat-box h3 {
+  margin: 0;
+  color: #999;
+}
+
+.stat-value {
+  font-size: 1.8rem;
+  color: #ffa502;
+  margin: 0.5rem 0;
+  font-family: 'Roboto Mono', monospace;
+  text-shadow: 0 0 5px rgba(255, 165, 2, 0.3);
+}
+
+.stat-bar {
+  height: 4px;
+  background: #ffd700;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.pirate-info {
+  margin-top: 2rem;
+}
+
+.pirate-info h3 {
+  color: #ffd700;
+  margin: 1.5rem 0 0.5rem;
+}
+
+.pirate-info p {
+  margin: 0;
+  color: #ccc;
+  line-height: 1.6;
+}
+
+.action-buttons {
+  margin-top: 2rem;
+  display: flex;
+  gap: 1rem;
+}
+
+.edit-button {
+  background: #ffd700;
+  color: #1a1a1a;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.edit-button:hover {
+  background: #ffed4a;
+  transform: translateY(-2px);
+}
+
+.loading, .error {
+  text-align: center;
+  padding: 2rem;
+  color: #ffd700;
+  font-size: 1.2rem;
+}
+
+.pirate-description {
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-top: 2rem;
+  color: #ffd700;
+  font-style: italic;
+  line-height: 1.6;
+  border: 1px solid #ffd700;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+}
+
+.pirate-description h3 {
+  color: #ffd700;
+  margin-bottom: 1rem;
+  font-size: 1.4rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.pirate-description p {
+  color: #fff;
+  font-size: 1.1rem;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+
+
+
+
+
+
