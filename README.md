@@ -49,7 +49,7 @@ The following **additional** features are implemented:
 
 Here's a walkthrough of implemented user stories:
 
-<img src='https://github.com/Itsurguy2/PirateMates/blob/main/PirateMate%20git%202.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+<img src='C:\Users\jesse\React_Project\PirateMates\src\assets\PirateMate gif 3.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
 
 <!-- Replace this with whatever GIF tool you used! -->
 GIF created with ...  
